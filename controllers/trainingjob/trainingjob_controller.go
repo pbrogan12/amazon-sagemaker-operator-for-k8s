@@ -19,6 +19,7 @@ package trainingjob
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -303,7 +304,7 @@ func (r *Reconciler) addModelPathToStatus(ctx reconcileRequestContext) error {
 	// SageMaker stores the model artifact in OutputDataConfig path with path /output/model.tar.gz
 	// SageMaker documentation https://docs.aws.amazon.com/sagemaker/latest/dg/cdf-training.html
 	const outputPath string = "/output/model.tar.gz"
-	ctx.TrainingJob.Status.ModelPath = *ctx.TrainingJob.Spec.OutputDataConfig.S3OutputPath + ctx.TrainingJob.Status.SageMakerTrainingJobName + outputPath
+	ctx.TrainingJob.Status.ModelPath = strings.TrimSuffix(*ctx.TrainingJob.Spec.OutputDataConfig.S3OutputPath, "/") + ctx.TrainingJob.Status.SageMakerTrainingJobName + outputPath
 	if err = r.Status().Update(ctx, ctx.TrainingJob); err != nil {
 		return err
 	}
